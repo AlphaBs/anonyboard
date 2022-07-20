@@ -27,8 +27,16 @@ export default {
         if (!body)
             return ctx.throw(400);
 
-        const ip = ctx.request.ip.split('.');
-        const maskIp = ip[0] + "." + ip[1];
+        const ipv4 = ctx.request.ip.split('.');
+        const ipv6 = ctx.request.ip.split(':');
+
+        let maskIp: string;
+        if (ipv4.length === 4)
+            maskIp = ipv4[0] + "." + ipv4[1];
+        else if (ipv6.length > 1)
+            maskIp = ipv6[0] + ":" + ipv6[1];
+        else
+            maskIp = ctx.request.ip.slice(0, 7);
         
         body.name = `${body.name} (${maskIp})`;
         body.time = new Date();
